@@ -7,13 +7,51 @@ import { StarIcon as StarIconOutline } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+// import ReactStars from "react-stars";
 
 const ProductDetailedPage = () => {
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState<ProductType>();
   const [isOpen, setIsOpen] = useState(true);
+  const [isAdded, setIsAdded] = useState(false);
+
   const { id } = useParams();
   const router = useRouter();
+
+  /* Handlers */
+  const handleClick = () => {
+    setIsAdded(true);
+
+    let products: ProductType[] = [];
+
+    const storedProducts = localStorage.getItem("carts");
+    if (storedProducts) {
+      try {
+        const parsedProducts = JSON.parse(storedProducts);
+        if (Array.isArray(parsedProducts)) {
+          products = parsedProducts;
+        }
+      } catch (error) {
+        console.error("Error parsing products from localStorage:", error);
+      }
+    }
+
+    const isExistProduct = products.find((item) => item.id === product?.id);
+
+    if (isExistProduct) {
+      const updatedProducts = products.map((item) =>
+        item.id === product?.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      localStorage.setItem("carts", JSON.stringify(updatedProducts));
+    } else {
+      const data = [...products, { ...product, quantity: 1 }];
+      localStorage.setItem("carts", JSON.stringify(data));
+    }
+    toast("Product added to your cart!");
+  };
 
   useEffect(() => {
     async function getData() {
@@ -79,6 +117,10 @@ const ProductDetailedPage = () => {
                               />
                             )
                           )}
+                          {/* <ReactStars
+                            value={product.rating.rate}
+                            edit={false}
+                          /> */}
                         </div>
                       )}
                       <p className="text-blue-600 hover:underline cursor-pointer text-xs">
@@ -90,7 +132,10 @@ const ProductDetailedPage = () => {
                     </p>
                   </div>
                   <div className="space-y-3 text-sm">
-                    <button className="button w-full bg-blue-600 text-white border-transparent hover:border-blue-600 hover:bg-transparent hover:text-black">
+                    <button
+                      onClick={handleClick}
+                      className="button w-full bg-blue-600 text-white border-transparent hover:border-blue-600 hover:bg-transparent hover:text-black"
+                    >
                       Add to bag
                     </button>
                     <button

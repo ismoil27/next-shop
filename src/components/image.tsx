@@ -11,6 +11,7 @@ interface Props {
 
 const CustomImage: FC<Props> = ({ product, fill }) => {
   const [isLoading, setIsLoading] = useState(true);
+
   return (
     <>
       <Image

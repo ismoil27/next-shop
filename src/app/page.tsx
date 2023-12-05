@@ -1,5 +1,7 @@
+import Cta from "@/components/cta";
 import Hero from "@/components/hero";
 import Product from "@/components/products";
+import Statistics from "@/components/statistics";
 import { ProductType } from "@/interfaces";
 
 export default async function Home() {
@@ -17,6 +19,8 @@ export default async function Home() {
           ))}
         </div>
       </section>
+      <Cta />
+      <Statistics />
     </main>
   );
 }
